@@ -1,3 +1,4 @@
+import geopy
 from geopy.geocoders import Nominatim
 import folium
 #
