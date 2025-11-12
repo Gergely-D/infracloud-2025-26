@@ -17,7 +17,7 @@ import json
 
 # --- Router details ---
 ROUTER = {
-    "host": "192.168.56,102",   # IP address of the router
+    "host": "192.168.56.102",   # IP address of the router
     "user": "cisco",
     "password": "cisco123!"
 }
@@ -38,19 +38,38 @@ HEADERS = {
 def restconf_get(resource):
     """Send a RESTCONF GET and return parsed JSON or None"""
     url = f"{BASE_URL}/{resource}"
-    response = requests.get(url,
-                            auth=HTTPBasicAuth(ROUTER["user"], ROUTER["password"]),
-                            headers=HEADERS,
-                            verify=False)
-    if response.status_code == 200:
-        return response.json()
-    elif response.status_code == 204:
-        print(f"[i] {resource}: No content (empty dataset).")
-    elif response.status_code == 404:
-        print(f"[w] {resource}: Not supported on this version.")
-    else:
-        print(f"[!] HTTP {response.status_code} for {resource}")
+    try:
+        response = requests.get(
+            url,
+            auth=HTTPBasicAuth(ROUTER["user"], ROUTER["password"]),
+            headers=HEADERS,
+            verify=False
+        )
+
+        print(f"\n[DEBUG] {resource} -> HTTP {response.status_code}")
+
+        # Controleer HTTP status
+        if response.status_code == 200:
+            try:
+                # Probeer JSON te parsen
+                return response.json()
+            except json.JSONDecodeError:
+                print(f"[!] JSON decode error at {resource} — raw text shown below:")
+                print(response.text[:300])  # eerste 300 karakters om te debuggen
+                return None
+        elif response.status_code == 204:
+            print(f"[i] {resource}: No content (empty dataset).")
+        elif response.status_code == 404:
+            print(f"[w] {resource}: Not supported on this version.")
+        else:
+            print(f"[!] HTTP {response.status_code} for {resource}")
+            print(response.text[:200])
+
+    except requests.exceptions.RequestException as e:
+        print(f"[x] Request error for {resource}: {e}")
+
     return None
+
 
 
 print("\nNow connecting to router via RESTCONF...\n")
@@ -80,10 +99,11 @@ if inv_data:
         print(f"- {name}: {desc} | Model={model} | SN={serial}")
 
 # === [4] Interfaces ===
-int_data = restconf_get("ietf-interfaces:interfaces/interface")
+int_data = restconf_get("Cisco-IOS-XE-interfaces-oper:interfaces/interface")
 if int_data:
     print("\nInterfaces:")
-    for i in int_data["ietf-interfaces:interface"]:
+    #print(int_data)
+    for i in int_data["Cisco-IOS-XE-interfaces-oper:interface"]:
         desc = i.get("description", "no description")
         ipv4s = i.get("ietf-ip:ipv4", {}).get("address", [])
         iplist = ", ".join([ip["ip"] for ip in ipv4s]) if ipv4s else "no IP"
