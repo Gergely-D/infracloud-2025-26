@@ -1,0 +1,16 @@
+FROM python:3.12-slim
+
+WORKDIR /home/app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+# Folders voor webapp
+COPY static ./static
+COPY templates ./templates
+COPY flask_app_login_V2.py .
+
+EXPOSE 5055
+
+CMD ["python", "flask_app_login_V2.py"]
+ 
+ 

@@ -1,0 +1,24 @@
+#Use a stable version to fix the threading crash
+FROM python:3.12-slim
+
+#Set the folder where everything will live
+WORKDIR /home/app
+
+#Install Flask (Corrected command)
+RUN pip install --no-cache-dir --progress-bar off flask
+
+#COPY files relative to the WORKDIR
+#This puts files into /home/app/static, /home/app/templates, etc.
+COPY static ./static
+COPY templates ./templates
+COPY flask_app.py .
+
+#Expose the port your PYTHON CODE uses (likely 5555)
+EXPOSE 5050
+
+#Run the app
+CMD ["python", "flask_app.py"]
+
+ 
+ 
+ 

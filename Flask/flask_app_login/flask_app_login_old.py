@@ -6,7 +6,7 @@ import hashlib
 
 microweb_app = Flask(__name__)
 
-db_name = 'login.db'
+db_name = '/home/app/account_share/accounts.db'
 
 #### RE-INTIALIZING DATABASE => deleting all records from test database
 @microweb_app.route('/delete/all', methods=['POST', 'DELETE'])
@@ -30,13 +30,21 @@ def signup_v1():
     # POST gedeelte
     db_conn = sqlite3.connect(db_name)
     c = db_conn.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS USER_PLAIN (USERNAME TEXT PRIMARY KEY NOT NULL,PASSWORD TEXT NOT NULL);")
+    db_conn.commit()
     c.execute("""
         CREATE TABLE IF NOT EXISTS USER_PLAIN (
             USERNAME TEXT PRIMARY KEY NOT NULL,
             PASSWORD TEXT NOT NULL
         );
     """)
-    db_conn.commit()
+
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS USER_HASH (
+            USERNAME TEXT PRIMARY KEY NOT NULL,
+            HASH TEXT NOT NULL
+        );
+    """)
 
     try:
         c.execute(
@@ -124,5 +132,5 @@ def main():
 
 #### MAIN
 if __name__ == "__main__":
-    microweb_app.run(host="0.0.0.0", port=5050, ssl_context='adhoc')
+    microweb_app.run(host="0.0.0.0", port=5055, threaded=False)#, ssl_context='adhoc')
    
