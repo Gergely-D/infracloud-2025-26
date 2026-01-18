@@ -1,0 +1,14 @@
+{
+    "interfaces": [
+      {
+        "name": "GigabitEthernet0/0",
+        "ip": "192.168.1.1",
+        "status": "up"
+      },
+      {
+        "name": "Loopback0",
+        "ip": "10.0.0.1",
+        "status": "up"
+      }
+    ]
+  }

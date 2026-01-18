@@ -5,7 +5,7 @@ import os
 
 microweb_app = Flask(__name__)
 
-db_name = '/home/app/account_share/accounts.db'
+db_name = 'data/accounts.db'
 
 # Zorg dat database bestaat
 def init_db():
@@ -51,7 +51,7 @@ def delete_all():
 @microweb_app.route('/signup/v1', methods=['GET', 'POST'])
 def signup_v1():
     if request.method == 'GET':
-        return render_template("login.html", version="v1")
+        return render_template("signup.html", version="v1")
 
     # POST
     db_conn = sqlite3.connect(db_name)
@@ -85,11 +85,13 @@ def verify_plain(username, password):
 ### LOGIN V1 (plain text)
 @microweb_app.route('/login/v1', methods=['GET', 'POST'])
 def login_v1():
+    # GET: toon het login formulier
     if request.method == 'GET':
         return render_template("login.html", version="v1")
 
-    username = request.form['username']
-    password = request.form['password']
+    # POST: verwerk login
+    username = request.form.get('username', '').strip()
+    password = request.form.get('password', '').strip()
 
     db_conn = sqlite3.connect(db_name)
     c = db_conn.cursor()
@@ -98,8 +100,9 @@ def login_v1():
     db_conn.close()
 
     if record and record[0] == password:
-        return "Login success (plain text)"
-    return "Invalid username/password"
+        return "Login success, but insecure\n"
+    return "Invalid username/password\n"
+    
 
 ### SIGNUP V2 (hashed passwords, secure)
 @microweb_app.route('/signup/v2', methods=['GET', 'POST'])

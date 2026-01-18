@@ -1,0 +1,12 @@
+curl -X POST -u cisco:Cisco123! \
+http://library.demo.local/api/v1/loginViaBasic
+
+dit is voor token te krijgen
+
+devasc@labvm:~/labs/tasks/oefeningen (labos)/4.9.2 Lab _Integrating _REST_API_with_Python$ curl -X POST -u cisco:Cisco123! \
+> http://library.demo.local/api/v1/loginViaBasic
+{
+    "token": "cisco|qXS8Gk1eIMqa4mKqJsEOzurfC3qRvJDITWcdmjUO7UU"
+}
+
+vervolg is het maken van de 100 boeken uit het boeks deel.
