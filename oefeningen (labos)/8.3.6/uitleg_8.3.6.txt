@@ -1,0 +1,173 @@
+NETCONF Lab 8.3.6 – Stap-voor-stap Uitleg (CSR1kv)
+Doel
+
+Aantonen dat ik via NETCONF:
+
+een sessie kan opbouwen met de IOS-XE router,
+
+de NETCONF capabilities kan uitlezen,
+
+configuratie kan ophalen (met workaround als get-config faalt),
+
+configuratie kan wijzigen (hostname + loopback),
+
+een verwachte fout kan tonen (duplicate IP op loopback).
+
+Stap 1 – NETCONF verbinding opzetten (SSH naar poort 830)
+
+Ik gebruik ncclient om een NETCONF sessie te starten naar de router:
+
+Host: 192.168.56.102
+
+Port: 830 (NETCONF default)
+
+Username/Password: cisco / cisco123!
+
+hostkey_verify=False zodat ik geen SSH hostkey-check nodig heb in de labomgeving.
+
+Resultaat: de verbinding lukt, want ik krijg daarna server capabilities terug.
+
+Stap 2 – Capabilities tonen
+
+Na connectie print ik:
+
+for capability in m.server_capabilities:
+    print(capability)
+
+
+Wat dit bewijst:
+
+de NETCONF “hello” exchange werkt,
+
+de router vertelt welke NETCONF features en YANG modules hij ondersteunt (bv. base 1.0/1.1, writable-running, yang-library, Cisco IOS-XE YANG modules).
+
+Stap 3 – Configuratie ophalen (running)
+
+Normaal haal je running config op met:
+
+m.get_config(source="running")
+
+
+Maar op deze router faalt dit met:
+application protocol error
+
+Dat betekent: de router accepteert de sessie, maar geeft een error bij deze specifieke RPC (get-config running). Dit is image/implementatie-afhankelijk.
+
+Workaround (correct in NETCONF context)
+
+In plaats van “alles” op te vragen, gebruik ik <get> met een kleine filter (bv. enkel hostname). Dit is betrouwbaarder en voorkomt timeouts.
+
+Voorbeeld filter:
+
+<filter>
+  <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+    <hostname/>
+  </native>
+</filter>
+
+
+En dan:
+
+m.get(filter=small_filter)
+
+
+Resultaat: ik krijg de hostname terug in de rpc-reply.
+
+Stap 4 – Meer configuratie ophalen met filter (native: hostname + interface)
+
+Daarna toon ik dat filters ook grotere stukken config kunnen ophalen:
+
+hostname
+
+interface-config
+
+Ik gebruik opnieuw m.get(filter=netconf_filter).
+
+Resultaat: output toont onder andere:
+
+GigabitEthernet1 met IP-config,
+
+bestaande loopbacks,
+
+hostname.
+
+Dit bewijst dat filtering correct werkt en ik config kan lezen via YANG (Cisco IOS-XE native model).
+
+Stap 5 – Hostname wijzigen via edit-config
+
+Ik stuur een NETCONF edit-config naar running:
+
+<config>
+  <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+    <hostname>CSR1kv</hostname>
+  </native>
+</config>
+
+
+Resultaat: de router antwoordt met:
+
+<ok/>
+
+
+Dat betekent: de wijziging is succesvol toegepast.
+
+Stap 6 – Loopback1 aanmaken via edit-config
+
+Daarna maak ik Loopback1 aan met IP-adres 10.1.1.1/24:
+
+interface: Loopback1
+
+description: “My NETCONF loopback”
+
+IP: 10.1.1.1 255.255.255.0
+
+Resultaat: opnieuw <ok/>, dus configuratie is toegevoegd.
+
+Stap 7 – Verwachte fout demonstreren (duplicate IP)
+
+Om een expected failure te tonen, probeer ik een tweede loopback (Loopback2) met hetzelfde IP-adres 10.1.1.1/24.
+
+Dit is niet toegestaan, dus ik verwacht dat de router dit weigert.
+
+Ik vang de error op in Python met try/except.
+
+Resultaat: foutmelding:
+
+inconsistent value: Device refused one or more commands
+
+Dit bewijst dat:
+
+NETCONF edits echt gevalideerd worden door de router,
+
+de router correcte config-constraints afdwingt,
+
+mijn script errors correct opvangt.
+
+Verificatie via CLI (extra bewijs)
+
+Na het script kan ik op de router controleren:
+
+show run | include hostname
+show ip int brief | include Loopback
+show run interface loopback 1
+
+
+Verwacht:
+
+hostname CSR1kv
+
+Loopback1 aanwezig met 10.1.1.1/24
+
+Conclusie
+
+Met dit script toon ik volledig aan dat ik:
+
+een NETCONF sessie kan opzetten,
+
+capabilities kan lezen,
+
+config kan lezen (met filter, ook als get-config running faalt),
+
+config kan aanpassen met edit-config,
+
+en een foutscenario correct kan aantonen en opvangen.
