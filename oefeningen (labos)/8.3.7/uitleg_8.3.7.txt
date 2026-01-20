@@ -1,0 +1,111 @@
+RESTCONF Lab 8.3.7 – Stap-voor-stap Uitleg (CSR1kv)
+Doel
+
+Aantonen dat ik via RESTCONF:
+
+kan verbinden met een IOS-XE router,
+
+configuratie kan uitlezen via GET,
+
+configuratie kan aanpassen via PUT,
+
+en de HTTP-statuscodes correct kan interpreteren.
+
+Stap 1 – RESTCONF bereikbaarheid testen
+
+Eerst doe ik een GET op de RESTCONF root:
+
+GET /restconf/restconf/
+
+
+Resultaat:
+
+HTTP 200 OK
+
+JSON met data, operations en yang-library-version
+
+Betekenis:
+RESTCONF is actief en bereikbaar op de router.
+
+Stap 2 – Interfaces ophalen via RESTCONF (GET)
+
+Daarna haal ik alle interfaces op met:
+
+GET /restconf/data/ietf-interfaces:interfaces
+
+
+Headers:
+
+Accept: application/yang-data+json
+
+Content-type: application/yang-data+json
+
+Basic authentication
+
+Resultaat:
+
+HTTP 200 OK
+
+Geldige JSON-output met:
+
+GigabitEthernet1
+
+Loopback1 (NETCONF-lab)
+
+Loopback2 (RESTCONF-lab)
+
+extra loopbacks van eerdere labs
+
+Betekenis:
+Ik kan configuratie lezen via RESTCONF en correct omgaan met YANG-data in JSON-formaat.
+
+Stap 3 – Loopback2 configureren via RESTCONF (PUT)
+
+Vervolgens configureer ik Loopback2 via:
+
+PUT /restconf/data/ietf-interfaces:interfaces/interface=Loopback2
+
+
+Met een YANG-JSON body die:
+
+de interface definieert,
+
+een IPv4-adres instelt (10.2.1.1/24),
+
+en het juiste interface-type gebruikt.
+
+Resultaat:
+
+HTTP 204 No Content
+
+Betekenis:
+De configuratie is succesvol toegepast.
+204 betekent dat de resource al bestond en correct werd bijgewerkt (idempotent gedrag).
+
+Stap 4 – Verificatie
+
+Na de PUT zie ik in de GET-output dat Loopback2 aanwezig is met het juiste IP-adres.
+
+Extra controle via CLI:
+
+show ip interface brief
+
+Belangrijk detail over RESTCONF responses
+
+Een 204 No Content response bevat bewust geen JSON body.
+
+Dat is normaal gedrag in RESTCONF en geen fout.
+
+Succes wordt bepaald door de HTTP statuscode, niet door een response body.
+
+Conclusie
+
+Met dit labo toon ik aan dat ik:
+
+RESTCONF correct kan aanspreken,
+
+YANG-data kan lezen via GET,
+
+configuratie kan wijzigen via PUT,
+
+en RESTCONF-statuscodes correct kan interpreteren en uitleggen.
