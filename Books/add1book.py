@@ -1,6 +1,5 @@
 import requests
 import json
-from faker import Faker
 
 APIHOST = "http://library.demo.local"
 LOGIN = "cisco"
@@ -9,40 +8,43 @@ PASSWORD = "Cisco123!"
 def getAuthToken():
     authCreds = (LOGIN, PASSWORD)
     r = requests.post(
-        f"{APIHOST}/api/v1/loginViaBasic", 
-        auth = authCreds
+        f"{APIHOST}/api/v1/loginViaBasic",
+        auth=authCreds
     )
     if r.status_code == 200:
         return r.json()["token"]
     else:
-        raise Exception(f"Status code {r.status_code} and text {r.text}, while trying to Auth.")
+        raise Exception(
+            f"Status code {r.status_code} and text {r.text}, while trying to Auth."
+        )
 
 def addBook(book, apiKey):
     r = requests.post(
-        f"{APIHOST}/api/v1/books", 
-        headers = {
+        f"{APIHOST}/api/v1/books",
+        headers={
             "Content-type": "application/json",
             "X-API-Key": apiKey
-            },
-        data = json.dumps(book)
+        },
+        data=json.dumps(book)
     )
     if r.status_code == 200:
-        print(f"Book {book} added.")
+        print(f"Book added successfully: {book['title']}")
     else:
-        raise Exception(f"Error code {r.status_code} and text {r.text}, while trying to add book {book}.")
+        raise Exception(
+            f"Error code {r.status_code} and text {r.text}, while trying to add book."
+        )
 
-# Get the Auth Token Key
-# apiKey = getAuthToken()
-apiKey = "cisco|ovUo0NepD_YNTbIo4hnHyZwBHpZHC6vOx5PYsLdRIQQ"
+# API-key ophalen (of hardcoded gebruiken)
+apiKey = getAuthToken()
+#apiKey = "cisco|ovUo0NepD_YNTbIo4hnHyZwBHpZHC6vOx5PYsLdRIQQ"
 
-# Using the faker module, generate random "fake" books
-fake = Faker()
-for i in range(900,999):
-    fakeTitle = fake.catch_phrase()
-    fakeAuthor = fake.name()
-    fakeISBN = fake.isbn13()
-    book = {"id":i, "title": fakeTitle, "author": fakeAuthor, "isbn": fakeISBN}
-    # add the new random "fake" book using the API
-    addBook(book, apiKey) 
+# Specifiek boek: The Shining
+book = {
+    "id": 1001,
+    "title": "The Shining",
+    "author": "Stephen King",
+    "isbn": "9780307743657"
+}
 
-    
+# Boek toevoegen via de API
+addBook(book, apiKey)

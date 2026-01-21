@@ -1,0 +1,20 @@
+HTTP headers opbouwen
+headers = {
+    "accept": "application/json",
+    "X-API-KEY": API_KEY,
+    "Content-Type": "application/json"
+}
+
+
+Deze headers zeggen tegen de server:
+
+accept: application/json
+→ Ik verwacht JSON terug
+
+Content-Type: application/json
+→ Ik stuur JSON-data
+
+X-API-KEY
+→ Dit is mijn authenticatie
+
+⚠️ Zonder geldige API-key → 401 Unauthorized

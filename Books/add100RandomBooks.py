@@ -33,8 +33,8 @@ def addBook(book, apiKey):
         raise Exception(f"Error code {r.status_code} and text {r.text}, while trying to add book {book}.")
 
 # Get the Auth Token Key
-# apiKey = getAuthToken()
-apiKey = "cisco|ovUo0NepD_YNTbIo4hnHyZwBHpZHC6vOx5PYsLdRIQQ"
+apiKey = getAuthToken()
+#apiKey = "cisco|ovUo0NepD_YNTbIo4hnHyZwBHpZHC6vOx5PYsLdRIQQ"
 
 # Using the faker module, generate random "fake" books
 fake = Faker()

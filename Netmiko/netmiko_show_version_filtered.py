@@ -10,7 +10,7 @@ from netmiko import ConnectHandler
 sshCli = ConnectHandler(
     device_type="cisco_ios",
     host="192.168.56.102",
-    port="22",
+    port=22,
     username="cisco",
     password="cisco123!"
     )

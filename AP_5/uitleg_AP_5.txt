@@ -1,0 +1,38 @@
+Stap 1 – Variabelen definiëren
+API_KEY="cisco|oPDek0hz2ppG3r0AH7ctns7ML4HtjFRir3Sq__gPix0"
+ID=1001
+TITLE="Two Towers"
+AUTHOR="JR Tolkien"
+
+
+Hier worden de waarden vastgelegd die later in het HTTP-request gebruikt worden.
+De API-key dient voor authenticatie, de andere variabelen vormen de data van het boek.
+
+Stap 2 – POST-request versturen met curl
+curl -X POST "http://library.demo.local/api/v1/books" \
+
+
+Dit stuurt een POST-request naar het /books endpoint om een nieuw resource aan te maken.
+
+Stap 3 – HTTP-headers meegeven
+-H "accept: application/json" \
+-H "X-API-KEY: $API_KEY" \
+-H "Content-Type: application/json" \
+
+
+accept: verwacht JSON als antwoord
+
+Content-Type: geeft aan dat de body JSON bevat
+
+X-API-KEY: zorgt voor API-authenticatie
+
+Stap 4 – JSON payload meesturen
+-d "{\"id\":$ID,\"title\":\"$TITLE\",\"author\":\"$AUTHOR\"}"
+
+
+Dit is de request body in JSON-formaat.
+De bash-variabelen worden hier vervangen door hun waarden en zo naar de API gestuurd.
+
+Wat gebeurt er functioneel?
+
+De API ontvangt een POST-request met geldige authenticatie en JSON-data en maakt hiermee een nieuw boek aan in het systeem.
