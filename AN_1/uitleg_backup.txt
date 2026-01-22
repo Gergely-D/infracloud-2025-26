@@ -1,0 +1,143 @@
+1) Eerste run: “geen hosts matched”
+
+Wat je zag
+
+Warnings zoals:
+
+provided hosts list is empty
+
+Could not match supplied host pattern, ignoring: CSR1kv
+
+skipping: no hosts matched
+
+Waarom
+
+Je playbook verwees naar hosts: CSR1kv, maar Ansible gebruikte niet jouw hosts-inventorybestand.
+
+Zonder -i hosts (of zonder correcte ansible.cfg in die folder) pakt Ansible de default inventory (vaak leeg / alleen localhost).
+
+Wat je hebt aangepast
+
+Je playbook starten met inventory expliciet:
+
+ansible-playbook -i hosts Backup_router_playbook.yaml
+
+
+Wat dit doet
+
+-i hosts vertelt Ansible: “gebruik het inventorybestand hosts in deze map”, waar jouw device CSR1kv ansible_user=... ansible_host=... in staat.
+
+2) Daarna: timeout op show running-config
+
+Wat je zag
+
+command timeout triggered, timeout value is 10 secs
+
+Waarom
+
+show running-config kan langer duren dan 10 seconden (zeker op een VM of als de device traag reageert).
+
+De module breekt dan af voordat de output volledig terug is.
+
+Wat je hebt aangepast
+
+Timeout verhogen (kan op verschillende manieren):
+
+of in de playbook/module-parameters
+
+of via ansible.cfg (afhankelijk van je opzet)
+
+Wat dit doet
+
+Je geeft Ansible meer tijd om de command output te ontvangen, zodat ios_command niet voortijdig faalt.
+
+3) Daarna: SSH host key / fingerprint error
+
+Wat je zag
+
+paramiko: The authenticity of host '192.168.56.102' can't be established.
+
+met een ssh-rsa key fingerprint ...
+
+Waarom
+
+SSH wil normaal de host key controleren (zoals wanneer je voor het eerst handmatig SSH’t en “yes” moet typen).
+
+In een lab-omgeving heb je meestal geen SSH known_hosts / key trust ingesteld, dus Ansible stopt voor veiligheid.
+
+Wat je hebt aangepast
+Er zijn 2 typische oplossingen (jij hebt er één toegepast):
+
+Host key checking uitzetten (meest gebruikt in labs) in ansible.cfg:
+
+[defaults]
+host_key_checking = False
+
+
+OF
+2) Host key accepteren via SSH/known_hosts (meer “production-like”).
+
+Wat dit doet
+
+Met host_key_checking = False laat je Ansible verbinden zonder te stoppen op “unknown host key”.
+
+4) Daarna: “Destination directory backups does not exist”
+
+Wat je zag
+
+Destination directory backups does not exist
+
+Waarom
+
+In je playbook staat iets zoals:
+
+dest: "backups/show_run_{{ inventory_hostname }}.txt"
+
+De copy module kan geen map voor jou aanmaken als die nog niet bestaat (in deze context).
+
+Wat je hebt aangepast
+
+Map backups aanmaken vóór je de playbook opnieuw runt:
+
+mkdir backups
+
+
+Wat dit doet
+
+Zorgt dat het pad ./backups/ bestaat zodat de copy-task het bestand kan wegschrijven.
+
+5) Eindresultaat: playbook succesvol
+
+Wat je nu ziet
+
+Task 1: ok: [CSR1kv]
+
+Task 2: changed: [CSR1kv]
+
+Recap: ok=2 changed=1 failed=0
+
+Wat dit betekent
+
+Task 1 (ios_command) heeft succesvol de running-config opgehaald en in config.stdout[0] gezet.
+
+Task 2 (copy) heeft die output effectief als bestand opgeslagen in backups/…, daarom staat die op changed.
+
+Wat elke playbook-regel functioneel doet (kort)
+
+In grote lijnen:
+
+hosts: CSR1kv
+Doelhost (alias uit inventory).
+
+connection: local
+De playbook draait lokaal op je VM; de network modules maken zelf de verbinding naar de router.
+
+ios_command: commands: - show running-config
+Stuurt show-commando’s naar IOS en leest de output.
+
+register: config
+Bewaart output in variabele config zodat je die later kunt gebruiken.
+
+copy: content: "{{ config.stdout[0] }}" dest: backups/show_run_{{ inventory_hostname }}.txt
+Schrijft de output naar een tekstbestand.
+inventory_hostname wordt automatisch “CSR1kv”, dus je krijgt bv. show_run_CSR1kv.txt.
