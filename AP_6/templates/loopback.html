@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+  <title>AP6 - Loopback via Form</title>
+</head>
+<body>
+  <h2>AP6 – Create Loopback Interface (Form)</h2>
+
+  <form method="POST" action="/form/loopback">
+    <label>Loopback name:</label><br>
+    <input type="text" name="name" value="Loopback123"><br><br>
+
+    <label>IP address:</label><br>
+    <input type="text" name="ip" value="10.123.45.1"><br><br>
+
+    <label>Netmask:</label><br>
+    <input type="text" name="netmask" value="255.255.255.0"><br><br>
+
+    <button type="submit">Create Loopback</button>
+  </form>
+</body>
+</html>

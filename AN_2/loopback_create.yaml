@@ -1,0 +1,12 @@
+---
+- name: AN2 - Own playbook experiment on local virtual router (CSR1kv)
+  hosts: csr1kv
+  gather_facts: no
+
+  tasks:
+    - name: Create Loopback20 (AN2)
+      ios_config:
+        lines:
+          - interface Loopback20
+          - description Configured via Ansible AN2 (local CSR1kv)
+          - ip address 10.20.20.1 255.255.255.255

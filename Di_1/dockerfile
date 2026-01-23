@@ -1,0 +1,14 @@
+FFROM python:3.8
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_PROGRESS_BAR=off
+
+RUN python -m pip install --upgrade pip setuptools wheel \
+ && python -m pip install --no-cache-dir flask
+
+WORKDIR /app
+COPY . /app
+
+EXPOSE 8080
+CMD ["python3", "sample_app.py"]

@@ -1,0 +1,73 @@
+---
+# Js1 - YAML model voor interfaces van een network device
+# Doel: een consistent, machine-readable datamodel dat interface-config + status kan beschrijven.
+
+device:
+  id: "R1"
+  hostname: "CSR1kv"
+  vendor: "Cisco"
+  platform: "IOS-XE"
+  mgmt:
+    ip: "192.168.56.102"
+    vrf: "Mgmt-vrf"
+  timestamp_utc: "2026-01-22T00:00:00Z"
+
+interfaces:
+  - name: "GigabitEthernet1"
+    type: "ethernet"
+    admin_state: "up"        # up | down
+    oper_state: "up"         # up | down | unknown
+    description: "Management / VBox"
+    mtu: 1500
+    mac_address: "52:54:00:12:34:56"
+    ipv4:
+      mode: "dhcp"           # dhcp | static | none
+      addresses: []
+    ipv6:
+      enabled: false
+      addresses: []
+    vlans: []
+    tags:
+      role: "management"
+      zone: "mgmt"
+
+  - name: "Loopback10"
+    type: "loopback"
+    admin_state: "up"
+    oper_state: "up"
+    description: "Automation test loopback"
+    mtu: 1514
+    mac_address: null
+    ipv4:
+      mode: "static"
+      addresses:
+        - ip: "10.10.10.10"
+          netmask: "255.255.255.255"
+          prefix: 32
+    ipv6:
+      enabled: false
+      addresses: []
+    vlans: []
+    tags:
+      role: "test"
+      created_by: "ansible/restconf/netconf"
+
+  - name: "GigabitEthernet2"
+    type: "ethernet"
+    admin_state: "down"
+    oper_state: "down"
+    description: "Unused uplink"
+    mtu: 1500
+    mac_address: "52:54:00:65:43:21"
+    ipv4:
+      mode: "none"
+      addresses: []
+    ipv6:
+      enabled: true
+      addresses:
+        - ip: "2001:db8:2::1"
+          prefix: 64
+    vlans: []
+    tags:
+      role: "uplink"
+      zone: "lab"

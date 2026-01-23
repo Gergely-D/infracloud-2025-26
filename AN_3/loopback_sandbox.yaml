@@ -1,0 +1,12 @@
+---
+- name: AN3 - Configure loopback on cloud sandbox device
+  hosts: iosxe
+  gather_facts: no
+
+  tasks:
+    - name: Create Loopback200
+      ios_config:
+        lines:
+          - interface Loopback200
+          - description Configured via Ansible AN3
+          - ip address 10.200.200.1 255.255.255.255

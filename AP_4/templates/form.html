@@ -1,0 +1,23 @@
+!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AP4 - Webform to API</title>
+</head>
+<body>
+  <h2>AP4 – Webform → Python → REST API</h2>
+
+  <form method="POST" action="/submit">
+    <label>Book ID (numeric):</label><br>
+    <input type="text" name="id" value="1001" required><br><br>
+
+    <label>Title:</label><br>
+    <input type="text" name="title" value="Return of the king" required><br><br>
+
+    <label>Author:</label><br>
+    <input type="text" name="author" value="JR Tolkien" required><br><br>
+
+    <button type="submit">Send PUT to API</button>
+  </form>
+</body>
+</html>
