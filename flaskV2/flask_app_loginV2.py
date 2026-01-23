@@ -6,6 +6,7 @@ import os
 microweb_app = Flask(__name__)
 
 db_name = 'data/accounts.db'
+print("DB path:", os.path.abspath(db_name))
 
 # Zorg dat database bestaat
 def init_db():
@@ -108,7 +109,7 @@ def login_v1():
 @microweb_app.route('/signup/v2', methods=['GET', 'POST'])
 def signup_v2():
     if request.method == 'GET':
-        return render_template("signup.html", version="v2")
+        return render_template("signupV2.html", version="v2")
 
     username = request.form['username']
     password = request.form['password']
@@ -129,7 +130,7 @@ def signup_v2():
 @microweb_app.route('/login/v2', methods=['GET', 'POST'])
 def login_v2():
     if request.method == 'GET':
-        return render_template("login.html", version="v2")
+        return render_template("loginV2.html", version="v2")
 
     username = request.form['username']
     password = request.form['password']

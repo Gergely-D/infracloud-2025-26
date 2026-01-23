@@ -4,9 +4,10 @@
   gather_facts: no
 
   tasks:
-    - name: Create Loopback20 (AN2)
+    - name: Create Loopback22 (AN2)
       ios_config:
+        parents: "interface Loopback22"
         lines:
-          - interface Loopback20
           - description Configured via Ansible AN2 (local CSR1kv)
-          - ip address 10.20.20.1 255.255.255.255
+          - ip address 10.21.21.2 255.255.255.255
+

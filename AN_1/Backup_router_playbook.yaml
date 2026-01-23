@@ -3,6 +3,7 @@
   hosts: CSR1kv
   gather_facts: false
   connection: local
+#kern - geen linux facts gebruiken, router is geen linux
 
   tasks:
     - name: DISPLAYING THE RUNNING-CONFIG
@@ -14,5 +15,5 @@
 
     - name: SAVE OUTPUT TO ./backups/
       copy:
-        content: "{{ config.stdout[0] }}"
-        dest: "backups/show_run_{{ inventory_hostname }}.txt"
+        content: "{{ config.stdout[0] }}" #bevat de ruwe uitvoer van de commando met eerste element uit de lijst
+        dest: "backups/show_run_{{ inventory_hostname }}.txt" #--> schrijft letterlijk de output naar hier

@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 4646 bytes
+Current configuration : 4997 bytes
 !
-! Last configuration change at 21:44:58 UTC Wed Nov 12 2025 by cisco
+! Last configuration change at 22:50:33 UTC Wed Nov 12 2025 by cisco
 !
 version 16.9
 service timestamps debug datetime msec
@@ -138,6 +138,18 @@ interface Loopback1
 interface Loopback2
  description My second RESTCONF loopback
  ip address 10.2.1.1 255.255.255.0
+!
+interface Loopback20
+ description Configured via Ansible AN2 (local CSR1kv)
+ ip address 10.20.20.1 255.255.255.255
+!
+interface Loopback21
+ description Configured via Ansible AN2 (local CSR1kv)
+ ip address 10.21.21.1 255.255.255.255
+!
+interface Loopback22
+ description Configured via Ansible AN2 (local CSR1kv)
+ ip address 10.21.21.2 255.255.255.255
 !
 interface Loopback241
  description Loopback interface created with Ansible
